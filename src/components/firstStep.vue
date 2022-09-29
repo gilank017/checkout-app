@@ -103,7 +103,7 @@ export default {
 
 
     // function total
-    const handleTotal = () => {
+    function handleTotal() {
       if (this.visibleDropshipper) {
         this.totalPayment = parseInt(this.totalGoods) + parseInt(this.dropshippingFee)
       }
