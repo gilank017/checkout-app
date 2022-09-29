@@ -1,26 +1,32 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="checkout-page-wrapper">
+    <progress-bar />
+    <div class="container">
+      <first-step />
+    </div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import progressBar from './components/progressBar.vue'
+import firstStep from './components/firstStep.vue'
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    progressBar,
+    firstStep,
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="stylus">
+body
+  background-color #FFFAE6 !important
+#app
+  font-family 'Montserrat', sans-serif
+  -webkit-font-smoothing antialiased
+  -moz-osx-font-smoothing grayscale
+  text-align center
+  color #2c3e50
+  margin-top 60px
 </style>
