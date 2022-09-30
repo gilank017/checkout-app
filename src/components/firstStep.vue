@@ -14,10 +14,10 @@
         <div class="row">
           <div class="col-md-7">
             <div class="mb-3">
-              <c-input label="Email" forId="forEmail" type="email" placeholder="Insert Email" v-model="infoForm.email" />
+              <c-input label="Email" forId="forEmail" type="email" :className="errorInfoMessage.email.status" :message="errorInfoMessage.email.message" placeholder="Insert Email" v-model="infoForm.email" />
             </div>
             <div class="mb-3">
-              <c-input label="Phone Number" forId="forPhone" type="number" placeholder="Insert Phone Number" v-model="infoForm.phone" />
+              <c-input label="Phone Number" forId="forPhone" type="number" :className="errorInfoMessage.phone.status" :message="errorInfoMessage.phone.message" placeholder="Insert Phone Number" v-model="infoForm.phone" />
             </div>
             <div class="mb-3">
               <c-text-area label="Delivery Address" forId="forAddress" placeholder="Insert Delivery Address" v-model="infoForm.address" />
@@ -25,10 +25,10 @@
           </div>
           <div v-if="visibleDropshipper" class="col-md-5">
             <div class="mb-3">
-              <c-input label="Dropshipper Name" forId="forDropshippername" placeholder="Insert Dropshipper Name" v-model="dropshipperForm.name"/>
+              <c-input label="Dropshipper Name" forId="forDropshippername" :className="errorInfoMessage.dropshipperName.status" :message="errorInfoMessage.dropshipperName.message"  placeholder="Insert Dropshipper Name" v-model="infoForm.dropshipperName"/>
             </div>
             <div class="mb-3">
-              <c-input label="Dropshipper Phone Number" forId="forPhoneNumber" type="number" placeholder="Insert Dropshipper Phone Number" v-model="dropshipperForm.phone" />
+              <c-input label="Dropshipper Phone Number" forId="forPhoneNumber" type="number" :className="errorInfoMessage.dropshipperPhone.status" :message="errorInfoMessage.dropshipperPhone.message"  placeholder="Insert Dropshipper Phone Number" v-model="infoForm.dropshipperPhone" />
             </div>
           </div>
         </div>
@@ -67,7 +67,7 @@
 <script>
 import { reactive, ref } from '@vue/reactivity'
 import useVuelidate from '@vuelidate/core'
-import {required} from '@vuelidate/validators'
+import {required, email } from '@vuelidate/validators'
 import cInput from './ui/cInput.vue'
 import cTextArea from './ui/cTextArea.vue'
 export default {
@@ -81,19 +81,45 @@ export default {
       email: "",
       phone: "",
       address: "",
+      dropshipperName: "",
+      dropshipperPhone: "",
     })
 
     const rulesInfoForm = {
-      email: {required},
+      email: {required, email},
       phone: {required},
       address: {required},
+      dropshipperName: {required},
+      dropshipperPhone:{required}
     }
+
+    const errorInfoMessage = reactive({
+      email: {
+        status: "",
+        message: "",
+      },
+      phone: {
+        status: "",
+        message: ""
+      },
+      address: {
+        status: "",
+        message: ""
+      },
+      dropshipperName: {
+        status: "",
+        message: ""
+      },
+      dropshipperPhone: {
+        status: "",
+        message: ""
+      }
+    })
 
     const v$ = useVuelidate(rulesInfoForm, infoForm)
 
     // dropshipper form
     const visibleDropshipper = ref(false)
-    const dropshipperForm = reactive({})
     const dropshippingFee = ref(5900)
 
     // pricing 
@@ -108,22 +134,54 @@ export default {
         this.totalPayment = parseInt(this.totalGoods) + parseInt(this.dropshippingFee)
       }
     }
+    
 
     const submitSummary = async () => {
-      const result = await v$.value
+      const result = await v$.value.$validate()
       console.log(result)
+      if (result) {
+        console.log('aaa')
+      } else {
+        Object.assign(errorInfoMessage, {
+          email: {
+            status: "is-valid",
+            message: "",
+          },
+          phone: {
+            status: "is-valid",
+            message: ""
+          },
+          address: {
+            status: "is-valid",
+            message: ""
+          },
+          dropshipperName: {
+            status: "is-valid",
+            message: ""
+          },
+          dropshipperPhone: {
+            status: "is-valid",
+            message: ""
+          },
+      })
+        const errorMessage = v$.value.$errors
+        Object.entries(errorMessage).forEach((error) => {
+          errorInfoMessage[error[1].$property].status = error[1].$property !== undefined ? 'is-invalid' : 'is-valid'
+          errorInfoMessage[error[1].$property].message = error[1].$message
+        })
+      }
     }
 
     return {
       infoForm,
       visibleDropshipper,
-      dropshipperForm,
+      errorInfoMessage,
       v$,
       totalGoods,
       totalPayment,
       dropshippingFee,
       handleTotal,
-      submitSummary
+      submitSummary,
     }
   }
 }

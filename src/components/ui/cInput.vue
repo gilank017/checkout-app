@@ -1,8 +1,10 @@
 <template>
-  <div class="form-floating mb-3">
+  <div class="form-floating">
     <input :type="type" class="form-control" :class="className" :id="forId" :placeholder="placeholder" @input="updateValue" :value="modelValue">
     <label :for="forId">{{ label }}</label>
   </div>
+  <div v-if="className === 'is-invalid'" class="error-message">{{ message }}</div>
+  
 </template>
 <script>
 export default {
@@ -30,6 +32,10 @@ export default {
     modelValue: {
       type: [String, Number],
       default: ''
+    },
+    message: {
+      type: String,
+      default: ''
     }
   },
   setup(props, context) {
@@ -45,4 +51,10 @@ export default {
 <style lang="stylus">
 .form-control.is-invalid, .was-validated .form-control:invalid
   border-color #FF8A00 !important
+.form-control.is-valid, .was-validated .form-control:valid
+  border-color #1BD97B !important
+.error-message
+  font-size .875em
+  color #FF8A00
+  text-align left
 </style>
